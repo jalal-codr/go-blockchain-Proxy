@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"proxy/jobs"
+	"proxy/routes"
+)
 
 func main() {
-	fmt.Println("Hello world")
+	go jobs.RunJobs()
+	routes.StartServer()
 }
