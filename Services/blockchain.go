@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"proxy/utils"
 )
 
 func CreateBlock(key string) (string, error) {
@@ -35,6 +36,11 @@ func CreateBlock(key string) (string, error) {
 		return "", fmt.Errorf("error reading response body: %w", err)
 	}
 
+	hash, err := utils.EncryptString(string(body))
+	if err != nil {
+		return "", fmt.Errorf("error reading encrypting body: %w", err)
+	}
 	// Return the response as a string
-	return string(body), nil
+	return string(hash), nil
+
 }

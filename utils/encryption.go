@@ -7,10 +7,12 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"os"
 )
 
 // Encrypt a string using AES encryption
-func EncryptString(data, key string) (string, error) {
+func EncryptString(data string) (string, error) {
+	key := os.Getenv("ENCRYPTION_KEY")
 	// Convert the key to a 32-byte array
 	keyBytes := []byte(key)
 	if len(keyBytes) != 32 {
@@ -41,7 +43,8 @@ func EncryptString(data, key string) (string, error) {
 	return base64.StdEncoding.EncodeToString(result), nil
 }
 
-func DecryptString(encrypted, key string) (string, error) {
+func DecryptString(encrypted string) (string, error) {
+	key := os.Getenv("ENCRYPTION_KEY")
 	keyBytes := []byte(key)
 	if len(keyBytes) != 32 {
 		return "", fmt.Errorf("encryption key must be 32 bytes")
