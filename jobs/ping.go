@@ -7,7 +7,7 @@ import (
 )
 
 func MakeGetRequest() (string, error) {
-	url := "https://pingserver-lvkn.onrender.com"
+	url := "http://localhost:8080/"
 	// Make the GET request
 	resp, err := http.Get(url)
 	if err != nil {
