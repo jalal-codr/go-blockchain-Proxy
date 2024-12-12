@@ -36,11 +36,23 @@ func CreateBlock(key string) (string, error) {
 		return "", fmt.Errorf("error reading response body: %w", err)
 	}
 
-	hash, err := utils.EncryptString(string(body))
-	if err != nil {
-		return "", fmt.Errorf("error reading encrypting body: %w", err)
+	// Parse the response JSON to extract blockHash
+	var response map[string]string
+	if err := json.Unmarshal(body, &response); err != nil {
+		return "", fmt.Errorf("error unmarshaling response JSON: %w", err)
 	}
-	// Return the response as a string
-	return string(hash), nil
 
+	blockHash, ok := response["blockHash"]
+	if !ok {
+		return "", fmt.Errorf("blockHash not found in response")
+	}
+
+	// Encrypt the blockHash
+	hash, err := utils.EncryptString(blockHash)
+	if err != nil {
+		return "", fmt.Errorf("error encrypting blockHash: %w", err)
+	}
+
+	// Return the encrypted blockHash
+	return hash, nil
 }

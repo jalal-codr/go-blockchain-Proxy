@@ -10,17 +10,26 @@ import (
 	"os"
 )
 
-// Encrypt a string using AES encryption
 func EncryptString(data string) (string, error) {
-	key := os.Getenv("ENCRYPTION_KEY")
-	// Convert the key to a 32-byte array
-	keyBytes := []byte(key)
-	if len(keyBytes) != 32 {
+	// Get the base64-encoded key from the environment variable
+	keyBase64 := os.Getenv("ENCRYPTION_KEY")
+	if keyBase64 == "" {
+		return "", fmt.Errorf("ENCRYPTION_KEY not set")
+	}
+
+	// Decode the base64 key
+	key, err := base64.StdEncoding.DecodeString(keyBase64)
+	if err != nil {
+		return "", fmt.Errorf("error decoding base64 key: %w", err)
+	}
+
+	// Ensure the key is exactly 32 bytes
+	if len(key) != 32 {
 		return "", fmt.Errorf("encryption key must be 32 bytes")
 	}
 
 	// Create a new AES cipher block
-	block, err := aes.NewCipher(keyBytes)
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", fmt.Errorf("error creating cipher block: %w", err)
 	}
@@ -44,28 +53,47 @@ func EncryptString(data string) (string, error) {
 }
 
 func DecryptString(encrypted string) (string, error) {
-	key := os.Getenv("ENCRYPTION_KEY")
-	keyBytes := []byte(key)
-	if len(keyBytes) != 32 {
+	// Get the base64-encoded key from the environment variable
+	keyBase64 := os.Getenv("ENCRYPTION_KEY")
+	if keyBase64 == "" {
+		return "", fmt.Errorf("ENCRYPTION_KEY not set")
+	}
+
+	// Decode the base64 key
+	key, err := base64.StdEncoding.DecodeString(keyBase64)
+	if err != nil {
+		return "", fmt.Errorf("error decoding base64 key: %w", err)
+	}
+
+	// Ensure the key is exactly 32 bytes
+	if len(key) != 32 {
 		return "", fmt.Errorf("encryption key must be 32 bytes")
 	}
 
-	data, err := base64.StdEncoding.DecodeString(encrypted)
+	// Decode the base64-encoded encrypted data
+	cipherData, err := base64.StdEncoding.DecodeString(encrypted)
 	if err != nil {
-		return "", fmt.Errorf("error decoding base64: %w", err)
+		return "", fmt.Errorf("error decoding base64 encrypted data: %w", err)
 	}
 
-	iv := data[:aes.BlockSize]
-	ciphertext := data[aes.BlockSize:]
+	// Extract the IV (first AES.BlockSize bytes) and ciphertext
+	if len(cipherData) < aes.BlockSize {
+		return "", fmt.Errorf("ciphertext too short")
+	}
+	iv := cipherData[:aes.BlockSize]
+	ciphertext := cipherData[aes.BlockSize:]
 
-	block, err := aes.NewCipher(keyBytes)
+	// Create a new AES cipher block
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return "", fmt.Errorf("error creating cipher block: %w", err)
 	}
 
-	stream := cipher.NewCFBDecrypter(block, iv)
+	// Decrypt the data using Cipher Block Chaining (CBC) mode
 	plaintext := make([]byte, len(ciphertext))
+	stream := cipher.NewCFBDecrypter(block, iv)
 	stream.XORKeyStream(plaintext, ciphertext)
 
+	// Return the plaintext as a string
 	return string(plaintext), nil
 }
