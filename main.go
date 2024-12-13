@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	models "proxy/Models"
 	"proxy/jobs"
 	"proxy/routes"
 
@@ -17,6 +18,7 @@ func main() {
 		}
 	}
 
+	go models.InitDb()
 	go jobs.RunJobs()
 	routes.StartServer()
 }
