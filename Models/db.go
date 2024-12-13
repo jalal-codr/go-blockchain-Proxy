@@ -35,5 +35,5 @@ func InitDb() {
 		panic(err)
 	}
 	DB = client
-	fmt.Println("Connected to MongoDB!\n")
+	fmt.Println("Connected to MongoDB!")
 }
