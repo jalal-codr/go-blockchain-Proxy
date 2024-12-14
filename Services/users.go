@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	models "proxy/Models"
 	"proxy/types"
 	"proxy/utils"
 )
@@ -35,6 +36,12 @@ func CreateUser(hash string) (string, error) {
 		return "", err
 	}
 	newUser.PrivateKey = encryptedPrivateKey
+
+	err = models.CreateUser(newUser)
+	if err != nil {
+		fmt.Println("Error saving user", err)
+		return "", err
+	}
 
 	return publicKey, nil
 }

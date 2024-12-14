@@ -12,6 +12,19 @@ import (
 
 var DB *mongo.Client
 
+func CloseDB() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := DB.Disconnect(ctx); err != nil {
+		fmt.Println("Error disconnecting MongoDB:", err)
+		return err
+	}
+
+	fmt.Println("Disconnected from MongoDB successfully.")
+	return nil
+}
+
 func InitDb() {
 	var mongoUri = os.Getenv("MONGO_URL")
 
@@ -21,12 +34,6 @@ func InitDb() {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(
 		mongoUri,
 	))
-
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-	}()
 
 	err = client.Ping(ctx, nil)
 
