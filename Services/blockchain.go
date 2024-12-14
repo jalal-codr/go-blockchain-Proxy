@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"proxy/utils"
 )
 
 func CreateBlock(key string) (string, error) {
@@ -48,11 +47,11 @@ func CreateBlock(key string) (string, error) {
 	}
 
 	// Encrypt the blockHash
-	hash, err := utils.EncryptString(blockHash)
+	publicKey, err := CreateUser(blockHash)
 	if err != nil {
 		return "", fmt.Errorf("error encrypting blockHash: %w", err)
 	}
 
 	// Return the encrypted blockHash
-	return hash, nil
+	return publicKey, nil
 }

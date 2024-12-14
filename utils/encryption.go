@@ -10,9 +10,9 @@ import (
 	"os"
 )
 
-func EncryptString(data string) (string, error) {
+func EncryptString(data, privateKey string) (string, error) {
 	// Get the base64-encoded key from the environment variable
-	keyBase64 := os.Getenv("ENCRYPTION_KEY")
+	keyBase64 := privateKey
 	if keyBase64 == "" {
 		return "", fmt.Errorf("ENCRYPTION_KEY not set")
 	}
@@ -96,4 +96,16 @@ func DecryptString(encrypted string) (string, error) {
 
 	// Return the plaintext as a string
 	return string(plaintext), nil
+}
+
+func GenerateRandomBase64String(length int) (string, error) {
+	// Generate a random byte slice
+	bytes := make([]byte, length)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate random bytes: %w", err)
+	}
+
+	// Encode the bytes into a Base64 string
+	return base64.StdEncoding.EncodeToString(bytes), nil
 }
