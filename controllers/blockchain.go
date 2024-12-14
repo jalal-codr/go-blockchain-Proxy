@@ -39,7 +39,7 @@ func CreateBlock(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	response := map[string]string{
 		"message":   "Block created",
-		"blockHash": newBlock,
+		"publicKey": newBlock,
 	}
 	json.NewEncoder(w).Encode(response)
 }

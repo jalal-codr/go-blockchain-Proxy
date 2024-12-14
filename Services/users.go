@@ -36,5 +36,5 @@ func CreateUser(hash string) (string, error) {
 	}
 	newUser.PrivateKey = encryptedPrivateKey
 
-	return privateKey, nil
+	return publicKey, nil
 }
