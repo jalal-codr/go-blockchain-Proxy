@@ -5,3 +5,7 @@ type User struct {
 	Publickey  string
 	Hash       string
 }
+
+type UserFetch struct {
+	Publickey string
+}

@@ -45,3 +45,15 @@ func CreateUser(hash string) (string, error) {
 
 	return publicKey, nil
 }
+
+func GetUserHash(user types.User) (string, error) {
+	privateKey, err := utils.DecryptString(user.PrivateKey, user.Publickey)
+	if err != nil {
+		return "", err
+	}
+	hash, err := utils.DecryptString(user.Hash, privateKey)
+	if err != nil {
+		return "", err
+	}
+	return hash, nil
+}

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"proxy/types"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func CreateUser(data *types.User) error {
@@ -29,4 +31,20 @@ func CreateUser(data *types.User) error {
 	}
 	fmt.Println("User Created", result)
 	return nil
+}
+
+func GetUser(publicKey string) (types.User, error) {
+	var dbName = "DB"
+	var collectionName = "users"
+	collection := DB.Database(dbName).Collection(collectionName)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var result types.User
+	var filter = bson.M{"publickey": publicKey}
+	err := collection.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		fmt.Println("Error fetching user", err)
+		return types.User{}, err
+	}
+	return result, nil
 }
