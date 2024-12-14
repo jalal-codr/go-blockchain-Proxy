@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"os"
 )
 
 func EncryptString(data, privateKey string) (string, error) {
@@ -52,9 +51,9 @@ func EncryptString(data, privateKey string) (string, error) {
 	return base64.StdEncoding.EncodeToString(result), nil
 }
 
-func DecryptString(encrypted string) (string, error) {
+func DecryptString(encrypted, privateKey string) (string, error) {
 	// Get the base64-encoded key from the environment variable
-	keyBase64 := os.Getenv("ENCRYPTION_KEY")
+	keyBase64 := privateKey
 	if keyBase64 == "" {
 		return "", fmt.Errorf("ENCRYPTION_KEY not set")
 	}
