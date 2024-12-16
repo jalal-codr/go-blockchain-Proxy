@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	models "proxy/Models"
+
+	"github.com/gorilla/websocket"
 )
 
 func CreateBlock(key string) (string, error) {
@@ -106,4 +109,29 @@ func GetBalance(publicKey string) (interface{}, error) {
 	}
 	// Return the encrypted blockHash
 	return balance, nil
+}
+
+func mining(hash string) {
+	serverURL := "ws://localhost:8080/ws"
+
+	conn, _, err := websocket.DefaultDialer.Dial(serverURL, nil)
+	if err != nil {
+		log.Fatalf("Failed to connect to server: %v", err)
+	}
+	defer conn.Close()
+
+	fmt.Println("Connected to WebSocket server")
+
+	for {
+		var data struct {
+			Hash string `json:"hash"`
+		}
+		if err := json.Unmarshal(, &data); err != nil {
+			fmt.Println("Invalid json format", err)
+		}
+		conn.WriteMessage(websocket.TextMessage, []byte("Mining Token...."))
+		userBlock.MintToken(&BC.Token, BC)
+
+		conn.WriteMessage(websocket.TextMessage, []byte("Token minied"))
+	}
 }
