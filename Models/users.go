@@ -25,10 +25,6 @@ func CreateUser(data *types.User) error {
 		fmt.Println("Error saving user", err)
 		return err
 	}
-	err = CloseDB()
-	if err != nil {
-		fmt.Println("Error closing DB", err)
-	}
 	fmt.Println("User Created", result)
 	return nil
 }

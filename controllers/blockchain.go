@@ -115,17 +115,15 @@ func WebsocketConnection(w http.ResponseWriter, r *http.Request) {
 			conn.WriteMessage(websocket.TextMessage, []byte("Invalid publicKey"))
 			return
 		}
-		err = services.Mining(hash)
-		if err != nil {
-			fmt.Println("Error mining", err)
-			conn.WriteMessage(websocket.TextMessage, []byte("Error connecting to node"))
-			return
-		}
-		// userBlock, err := BC.GetBlockByHash(data.Hash)
-
-		// conn.WriteMessage(websocket.TextMessage, []byte("Mining Token...."))
-		// userBlock.MintToken(&BC.Token, BC)
-
-		// conn.WriteMessage(websocket.TextMessage, []byte("Token minied"))
+		msgChan := make(chan []byte)
+		go func() {
+			if err := services.Mining(hash, msgChan); err != nil {
+				fmt.Println("Error mining", err)
+				conn.WriteMessage(websocket.TextMessage, []byte("Error connecting to node"))
+				return
+			}
+		}()
+		msg := <-msgChan
+		conn.WriteMessage(websocket.TextMessage, msg)
 	}
 }

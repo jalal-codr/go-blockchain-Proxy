@@ -111,7 +111,7 @@ func GetBalance(publicKey string) (interface{}, error) {
 	return balance, nil
 }
 
-func Mining(hash string) error {
+func Mining(hash string, result chan []byte) error {
 	serverURL := "ws://localhost:8080/ws/mining"
 
 	conn, _, err := websocket.DefaultDialer.Dial(serverURL, nil)
@@ -143,6 +143,7 @@ func Mining(hash string) error {
 			fmt.Println("Error reading message:", err)
 			return err
 		}
+		result <- response
 
 		// Print the response from the server
 		fmt.Printf("Received response: %s\n", response)
