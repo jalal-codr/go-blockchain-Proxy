@@ -126,12 +126,25 @@ func mining(hash string) {
 		var data struct {
 			Hash string `json:"hash"`
 		}
-		if err := json.Unmarshal(, &data); err != nil {
-			fmt.Println("Invalid json format", err)
+		data.Hash = hash
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			fmt.Println("Error serializing to JSON:", err)
+			continue
 		}
-		conn.WriteMessage(websocket.TextMessage, []byte("Mining Token...."))
-		userBlock.MintToken(&BC.Token, BC)
 
-		conn.WriteMessage(websocket.TextMessage, []byte("Token minied"))
+		if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+			fmt.Println("Error sending message:", err)
+			return
+		}
+
+		_, response, err := conn.ReadMessage()
+		if err != nil {
+			fmt.Println("Error reading message:", err)
+			return
+		}
+
+		// Print the response from the server
+		fmt.Printf("Received response: %s\n", response)
 	}
 }
