@@ -111,12 +111,13 @@ func GetBalance(publicKey string) (interface{}, error) {
 	return balance, nil
 }
 
-func Mining(hash string, result chan []byte) error {
+func Mining(hash string, result chan []byte, errChan chan error) {
 	serverURL := "ws://localhost:8080/ws/mining"
 
 	conn, _, err := websocket.DefaultDialer.Dial(serverURL, nil)
 	if err != nil {
 		log.Fatalf("Failed to connect to server: %v", err)
+		errChan <- err
 	}
 	defer conn.Close()
 
@@ -135,13 +136,15 @@ func Mining(hash string, result chan []byte) error {
 
 		if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
 			fmt.Println("Error sending message:", err)
-			return err
+			errChan <- err
+			return
 		}
 
 		_, response, err := conn.ReadMessage()
 		if err != nil {
 			fmt.Println("Error reading message:", err)
-			return err
+			errChan <- err
+			return
 		}
 		result <- response
 

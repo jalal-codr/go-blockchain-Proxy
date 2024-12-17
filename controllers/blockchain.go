@@ -116,14 +116,17 @@ func WebsocketConnection(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		msgChan := make(chan []byte)
-		go func() {
-			if err := services.Mining(hash, msgChan); err != nil {
-				fmt.Println("Error mining", err)
-				conn.WriteMessage(websocket.TextMessage, []byte("Error connecting to node"))
+		errChan := make(chan error)
+		go services.Mining(hash, msgChan, errChan)
+		for {
+			select {
+			case msg := <-msgChan:
+				conn.WriteMessage(websocket.TextMessage, msg)
+			case err := <-errChan:
+				fmt.Println("Error:", err)
 				return
 			}
-		}()
-		msg := <-msgChan
-		conn.WriteMessage(websocket.TextMessage, msg)
+		}
+
 	}
 }
