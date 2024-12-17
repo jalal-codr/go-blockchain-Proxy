@@ -14,7 +14,7 @@ func InitRoutes() *http.ServeMux {
 	mux.HandleFunc("/", controllers.HelloHandler)
 	mux.HandleFunc("/createBlock", controllers.CreateBlock)
 
-	// mux.HandleFunc("/ws/mining", controllers.WebsocketConnection)
+	mux.HandleFunc("/ws/mining", controllers.WebsocketConnection)
 
 	// mux.HandleFunc("/transferToken", controllers.TransferToken)
 

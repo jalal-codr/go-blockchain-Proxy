@@ -2,10 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	models "proxy/Models"
 	services "proxy/Services"
 	"proxy/types"
+
+	"github.com/gorilla/websocket"
 )
 
 func CreateBlock(w http.ResponseWriter, r *http.Request) {
@@ -73,4 +77,55 @@ func GetBalance(w http.ResponseWriter, r *http.Request) {
 		"balance": balance,
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+func WebsocketConnection(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Error upgrading connection", err)
+	}
+	defer conn.Close()
+	for {
+		_, publicKey, err := conn.ReadMessage()
+		if err != nil {
+			fmt.Println("Error reading message", err)
+			break
+		}
+		var data struct {
+			Publickey string `json:"publicKey"`
+		}
+		if err := json.Unmarshal(publicKey, &data); err != nil {
+			fmt.Println("Invalid json format", err)
+		}
+		user, err := models.GetUser(data.Publickey)
+		if err != nil {
+			fmt.Println("Error fetching user", err)
+			conn.WriteMessage(websocket.TextMessage, []byte("Invalid publicKey"))
+			return
+		}
+		hash, err := services.GetUserHash(user)
+		if err != nil {
+			fmt.Println("Error fetching hash", err)
+			conn.WriteMessage(websocket.TextMessage, []byte("Invalid publicKey"))
+			return
+		}
+		err = services.Mining(hash)
+		if err != nil {
+			fmt.Println("Error mining", err)
+			conn.WriteMessage(websocket.TextMessage, []byte("Error connecting to node"))
+			return
+		}
+		// userBlock, err := BC.GetBlockByHash(data.Hash)
+
+		// conn.WriteMessage(websocket.TextMessage, []byte("Mining Token...."))
+		// userBlock.MintToken(&BC.Token, BC)
+
+		// conn.WriteMessage(websocket.TextMessage, []byte("Token minied"))
+	}
 }
