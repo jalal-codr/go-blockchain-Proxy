@@ -152,3 +152,64 @@ func Mining(hash string, result chan []byte, errChan chan error) {
 		fmt.Printf("Received response: %s\n", response)
 	}
 }
+
+func TransferToken(to, from string, amount float64) (interface{}, error) {
+	userTo, err := models.GetUser(to)
+	if err != nil {
+		return 0, fmt.Errorf("Error fetching user: %w", err)
+	}
+	userFrom, err := models.GetUser(from)
+	if err != nil {
+		return 0, fmt.Errorf("Error fetching user: %w", err)
+	}
+	hashTo, err := GetUserHash(userTo)
+	if err != nil {
+		return 0, fmt.Errorf("error fetching hash: %w", err)
+	}
+	hashFrom, err := GetUserHash(userFrom)
+	if err != nil {
+		return 0, fmt.Errorf("error fetching hash: %w", err)
+	}
+
+	url := "http://localhost:8080/transferToken"
+
+	// Example JSON data to send
+	data := map[string]interface{}{
+		"to":     hashTo,
+		"from":   hashFrom,
+		"amount": amount,
+	}
+
+	// Marshal the data to JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return 0, fmt.Errorf("error marshaling JSON data: %w", err)
+	}
+
+	// Create a new POST request with the JSON payload
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return 0, fmt.Errorf("error making POST request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return 0, fmt.Errorf("error reading response body: %w", err)
+	}
+
+	// Parse the response JSON to extract blockHash
+	var response map[string]interface{}
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("error unmarshaling response JSON: %w\nRaw response: %s", err, string(body))
+	}
+
+	// balance, ok := response["balance"]
+	// if !ok {
+	// 	return 0, fmt.Errorf("balance not found")
+	// }
+	// Return the encrypted blockHash
+
+	return response, nil
+}

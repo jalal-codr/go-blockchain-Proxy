@@ -16,7 +16,7 @@ func InitRoutes() *http.ServeMux {
 
 	mux.HandleFunc("/ws/mining", controllers.WebsocketConnection)
 
-	// mux.HandleFunc("/transferToken", controllers.TransferToken)
+	mux.HandleFunc("/transferToken", controllers.TransferToken)
 
 	mux.HandleFunc("/getBalance", controllers.GetBalance)
 
