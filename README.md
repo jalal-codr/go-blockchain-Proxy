@@ -1,6 +1,7 @@
 # go-blockchain-Proxy
 This acts as gateway for the blockchain API
-#Installation
+
+# Installation
 go mod tidy
 
 # Run Project 
