@@ -19,6 +19,7 @@ func InitRoutes() *http.ServeMux {
 	mux.HandleFunc("/transferToken", controllers.TransferToken)
 
 	mux.HandleFunc("/getBalance", controllers.GetBalance)
+	mux.HandleFunc("/sign-in", controllers.SignIn)
 
 	return mux
 }
