@@ -205,11 +205,5 @@ func TransferToken(to, from string, amount float64) (interface{}, error) {
 		return nil, fmt.Errorf("error unmarshaling response JSON: %w\nRaw response: %s", err, string(body))
 	}
 
-	// balance, ok := response["balance"]
-	// if !ok {
-	// 	return 0, fmt.Errorf("balance not found")
-	// }
-	// Return the encrypted blockHash
-
 	return response, nil
 }
