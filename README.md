@@ -11,7 +11,7 @@ go run main.go
 go build ./
 
 # features 
-1. Jwt Authorization 
+1. Authorization 
 2. Database 
 3. Encryption 
 4. REST API 
