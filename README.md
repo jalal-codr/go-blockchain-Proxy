@@ -5,6 +5,8 @@ This acts as gateway for the blockchain API
 go mod tidy
 
 # Run Project 
+npx @tailwindcss/cli -i ./static/input.css -o ./static/output.css --watch
+
 go run main.go
 
 # Build Project 

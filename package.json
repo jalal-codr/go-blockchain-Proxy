@@ -21,10 +21,15 @@
     "tailwindcss": "^4.0.0",
     "update-browserslist-db": "^1.1.2"
   },
+  "type": "module"
+  ,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "vite-plugin-tailwindcss": "^0.0.0-0"
+  }
 }
