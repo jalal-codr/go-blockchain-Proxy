@@ -521,6 +521,9 @@
   }
 }
 @layer utilities {
+  .fixed {
+    position: fixed;
+  }
   .mx-auto {
     margin-inline: auto;
   }
