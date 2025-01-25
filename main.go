@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	models "proxy/Models"
-	"proxy/jobs"
 	"proxy/routes"
+	"proxy/templates"
 
 	"github.com/joho/godotenv"
 )
@@ -19,6 +20,10 @@ func main() {
 	}
 
 	go models.InitDb()
-	go jobs.RunJobs()
+	err := templates.InitializeTemplates()
+	if err != nil {
+		fmt.Println(err)
+	}
+	// go jobs.RunJobs()
 	routes.StartServer()
 }
