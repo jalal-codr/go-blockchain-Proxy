@@ -4,7 +4,6 @@ This acts as gateway for the blockchain API
 go mod tidy
 
 # Run Project 
-
 go run main.go
 ## or
 air 
