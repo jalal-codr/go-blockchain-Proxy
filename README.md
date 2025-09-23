@@ -6,6 +6,7 @@ go mod tidy
 # Run Project 
 go run main.go
 ## or
+
 air 
 
 # Build Project 
